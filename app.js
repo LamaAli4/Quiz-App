@@ -47,15 +47,30 @@ class Quiz {
   }
 }
 
-// Testing the classes 
-const quiz = new Quiz(questions);
-const userAnswers = ["Paris", "4"];
+// Render questions to the DOM instead of console
+const quizContainer = document.getElementById("quiz-container");
+function renderQuestions() {
+  quizContainer.innerHTML = "";
+  questions.forEach((question, index) => {
+    const qDiv = document.createElement("div");
+    qDiv.classList.add("question");
 
-console.log("User score:", quiz.calculateScore(userAnswers));
-console.log("Percentage:", quiz.getPercentage());
-console.log("Passed:", quiz.isPassed());
+    const qText = document.createElement("h3");
+    qText.textContent = `${index + 1}. ${question.text}`;
+    qDiv.append(qText);
 
-const wrongAnswers = ["Berlin", "4"];
-console.log("User score:", quiz.calculateScore(wrongAnswers));
-console.log("Percentage:", quiz.getPercentage());
-console.log("Passed:", quiz.isPassed());
+    question.options.forEach((option) => {
+      const label = document.createElement("label");
+      const input = document.createElement("input");
+      input.type = "radio";
+      input.name = `question${index}`;
+      input.value = option;
+      label.append(input, option);
+      qDiv.append(label);
+    });
+
+    quizContainer.appendChild(qDiv);
+  });
+}
+
+renderQuestions();
