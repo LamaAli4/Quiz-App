@@ -10,7 +10,13 @@ class Question {
   }
 }
 
-// Array of questions --- I will add more questions later
+class TrueFalseQuestion extends Question {
+  constructor(text, correctAnswer) {
+    super(text, ["True", "False"], correctAnswer);
+  }
+}
+
+// Array of questions (mix MCQ + True/False)
 const questions = [
   new Question(
     "What is the capital of France?",
@@ -18,6 +24,8 @@ const questions = [
     "Paris"
   ),
   new Question("2 + 2 = ?", ["3", "4", "5"], "4"),
+  new TrueFalseQuestion("The Earth is flat.", "False"),
+  new TrueFalseQuestion("JavaScript is a programming language.", "True"),
 ];
 
 class Quiz {
@@ -47,7 +55,9 @@ class Quiz {
   }
 }
 
-// Render questions to the DOM instead of console
+const quiz = new Quiz(questions);
+
+// Render questions to the DOM
 const quizContainer = document.getElementById("quiz-container");
 function renderQuestions() {
   quizContainer.innerHTML = "";
@@ -74,3 +84,51 @@ function renderQuestions() {
 }
 
 renderQuestions();
+
+// Submit Button
+const submitBtn = document.getElementById("submit-btn");
+const resultDiv = document.getElementById("result");
+
+submitBtn.addEventListener("click", () => {
+  const answers = [];
+
+  questions.forEach((_, index) => {
+    const selected = document.querySelector(
+      `input[name="question${index}"]:checked`
+    );
+    answers.push(selected ? selected.value : null);
+  });
+
+  const score = quiz.calculateScore(answers);
+  const percentage = quiz.getPercentage();
+  const passed = quiz.isPassed();
+
+  resultDiv.textContent = `Your Score: ${score}/${
+    questions.length
+  } (${percentage.toFixed(0)}%) - ${passed ? "Passed 🎉" : "Failed ❌"}`;
+
+  document.querySelectorAll("input[type=radio]").forEach((input) => {
+    input.disabled = true;
+  });
+});
+
+// Reset Button
+const resetBtn = document.getElementById("reset-btn");
+
+resetBtn.addEventListener("click", () => {
+  questions.forEach((_, index) => {
+    const selected = document.querySelector(
+      `input[name="question${index}"]:checked`
+    );
+    if (selected) selected.checked = false;
+  });
+
+  resultDiv.textContent = "";
+
+  quiz.score = 0;
+  quiz.isFinished = false;
+
+  document.querySelectorAll("input[type=radio]").forEach((input) => {
+    input.disabled = false;
+  });
+});
