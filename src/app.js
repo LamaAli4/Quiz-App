@@ -10,14 +10,22 @@ const resultDiv = document.getElementById("result");
 const categorySelect = document.getElementById("category");
 const chooseMsg = document.getElementById("choose-msg");
 
-function renderQuestions(filterCategory = "All") {
+submitBtn.classList.add("hidden");
+resetBtn.classList.add("hidden");
+resultDiv.classList.add("hidden");
+chooseMsg.classList.remove("hidden");
+
+function renderQuestions(filterCategory) {
   quizContainer.innerHTML = "";
   chooseMsg.style.display = "none";
 
-  const filteredQuestions =
-    filterCategory === "All"
-      ? questions
-      : questions.filter((q) => q.category === filterCategory);
+  const filteredQuestions = questions.filter(
+    (q) => q.category === filterCategory
+  );
+
+  submitBtn.classList.remove("hidden");
+  resetBtn.classList.remove("hidden");
+  resultDiv.classList.remove("hidden");
 
   const storedAnswers = quiz.loadAnswers();
 
@@ -60,7 +68,10 @@ if (quiz.isQuizFinished()) {
   chooseMsg.style.display = "block";
   quiz.clearCategory();
   quiz.clearFinished();
-  categorySelect.value = "General";
+  categorySelect.value = "";
+  submitBtn.classList.add("hidden");
+  resetBtn.classList.add("hidden");
+  resultDiv.classList.add("hidden");
 } else {
   const savedCategory = quiz.loadCategory();
   const savedAnswers = quiz.loadAnswers();
@@ -71,7 +82,7 @@ if (quiz.isQuizFinished()) {
   } else {
     chooseMsg.style.display = "block";
     quiz.clearCategory();
-    categorySelect.value = "General";
+    categorySelect.value = "";
   }
 }
 
@@ -81,15 +92,14 @@ categorySelect.addEventListener("change", (e) => {
   renderQuestions(selectedCategory);
 });
 
+// زر Submit
 submitBtn.addEventListener("click", () => {
   const selectedCategory = categorySelect.value;
-  const filteredQuestions =
-    selectedCategory === "All"
-      ? questions
-      : questions.filter((q) => q.category === selectedCategory);
+  const filteredQuestions = questions.filter(
+    (q) => q.category === selectedCategory
+  );
 
   const answers = [];
-
   filteredQuestions.forEach((q, i) => {
     const selected = document.querySelector(
       `input[name="question${i}"]:checked`
@@ -131,8 +141,6 @@ resetBtn.addEventListener("click", () => {
 
   const selectedCategory = categorySelect.value;
   quiz.saveCategory(selectedCategory);
-
   renderQuestions(selectedCategory);
-
   quiz.clearFinished();
 });
