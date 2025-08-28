@@ -1,4 +1,5 @@
 import * as storage from "./storage.js";
+
 export class Question {
   constructor({ id, text, options = [], correctAnswer, category }) {
     this.id = id;

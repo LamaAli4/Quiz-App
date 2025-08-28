@@ -1,4 +1,4 @@
-import { Question, TrueFalseQuestion } from "./models.js";
+import { Question, TrueFalseQuestion } from "./classes.js";
 import { questionsData } from "./questionsData.js";
 
 export const questions = questionsData.map((q) => {
@@ -8,14 +8,14 @@ export const questions = questionsData.map((q) => {
       text: q.text,
       options: q.options,
       correctAnswer: q.correctAnswer,
-      category: q.category, 
+      category: q.category,
     });
   } else if (q.type === "tf") {
     return new TrueFalseQuestion({
       id: q.id,
       text: q.text,
       correctAnswer: q.correctAnswer,
-      category: q.category, 
+      category: q.category,
     });
   }
 });
