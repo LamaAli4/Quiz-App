@@ -1,18 +1,21 @@
+import * as storage from "./storage.js";
 export class Question {
-  constructor({ id, text, options = [], correctAnswer }) {
+  constructor({ id, text, options = [], correctAnswer, category }) {
     this.id = id;
     this.text = text;
     this.options = options;
     this.correctAnswer = correctAnswer;
+    this.category = category;
   }
+
   isCorrectAnswer(selected) {
     return this.correctAnswer === selected;
   }
 }
 
 export class TrueFalseQuestion extends Question {
-  constructor({ id, text, correctAnswer }) {
-    super({ id, text, options: ["True", "False"], correctAnswer });
+  constructor({ id, text, correctAnswer, category }) {
+    super({ id, text, options: ["True", "False"], correctAnswer, category });
   }
 }
 
@@ -22,35 +25,63 @@ export class Quiz {
     this.score = 0;
     this.isFinished = false;
     this.storage = storageKey;
+    this.categoryKey = "quiz-category";
+    this.finishedKey = "quiz-finished";
   }
 
-  calculateScore(answers) {
+  calculateScore(answers, filteredQuestions) {
     this.score = 0;
-    this.questions.forEach((q, i) => {
-      if (q.isCorrectAnswer(answers[i].answer)) this.score++;
+    filteredQuestions.forEach((q) => {
+      const ans = answers.find((a) => a.id === q.id);
+      if (ans && q.isCorrectAnswer(ans.answer)) {
+        this.score++;
+      }
     });
     this.isFinished = true;
     return this.score;
   }
 
-  getPercentage() {
-    return (this.score / this.questions.length) * 100;
+  getPercentage(filteredQuestions) {
+    return (this.score / filteredQuestions.length) * 100;
   }
 
-  hasPassed() {
-    return this.getPercentage() >= 70;
+  hasPassed(filteredQuestions) {
+    return this.getPercentage(filteredQuestions) >= 70;
   }
 
   saveAnswers(answers) {
-    localStorage.setItem(this.storage, JSON.stringify(answers));
+    storage.save(this.storage, answers);
   }
 
   loadAnswers() {
-    return JSON.parse(localStorage.getItem(this.storage) || "[]");
+    return storage.load(this.storage, []);
   }
 
   clearAnswers() {
-    localStorage.removeItem(this.storage);
+    storage.clear(this.storage);
+  }
+
+  saveCategory(category) {
+    storage.save(this.categoryKey, category);
+  }
+
+  loadCategory() {
+    return storage.load(this.categoryKey, "General");
+  }
+
+  clearCategory() {
+    storage.clear(this.categoryKey);
+  }
+
+  markFinished() {
+    storage.save(this.finishedKey, true);
+  }
+
+  isQuizFinished() {
+    return storage.load(this.finishedKey, false) === true;
+  }
+
+  clearFinished() {
+    storage.clear(this.finishedKey);
   }
 }
-

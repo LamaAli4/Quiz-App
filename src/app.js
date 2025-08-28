@@ -7,12 +7,21 @@ const quizContainer = document.getElementById("quiz-container");
 const submitBtn = document.getElementById("submit-btn");
 const resetBtn = document.getElementById("reset-btn");
 const resultDiv = document.getElementById("result");
+const categorySelect = document.getElementById("category");
+const chooseMsg = document.getElementById("choose-msg");
 
-
-// render in DOM
-function renderQuestions() {
+function renderQuestions(filterCategory = "All") {
   quizContainer.innerHTML = "";
-  questions.forEach((question, index) => {
+  chooseMsg.style.display = "none";
+
+  const filteredQuestions =
+    filterCategory === "All"
+      ? questions
+      : questions.filter((q) => q.category === filterCategory);
+
+  const storedAnswers = quiz.loadAnswers();
+
+  filteredQuestions.forEach((question, index) => {
     const qDiv = document.createElement("div");
     qDiv.classList.add("question");
 
@@ -27,18 +36,16 @@ function renderQuestions() {
       input.name = `question${index}`;
       input.value = option;
 
-      input.addEventListener("change", () => {
-        const answers = [];
-        questions.forEach((q, i) => {
-          const selected = document.querySelector(
-            `input[name="question${i}"]:checked`
-          );
-          if (selected) {
-            answers.push({ id: q.id, answer: selected.value });
-          }
-        });
+      const saved = storedAnswers.find((a) => a.id === question.id);
+      if (saved && saved.answer === option) {
+        input.checked = true;
+      }
 
-        quiz.saveAnswers(answers);
+      input.addEventListener("change", () => {
+        const answers = quiz.loadAnswers();
+        const updatedAnswers = answers.filter((a) => a.id !== question.id);
+        updatedAnswers.push({ id: question.id, answer: input.value });
+        quiz.saveAnswers(updatedAnswers);
       });
 
       label.append(input, document.createTextNode(option));
@@ -49,24 +56,41 @@ function renderQuestions() {
   });
 }
 
-renderQuestions();
+if (quiz.isQuizFinished()) {
+  chooseMsg.style.display = "block";
+  quiz.clearCategory();
+  quiz.clearFinished();
+  categorySelect.value = "General";
+} else {
+  const savedCategory = quiz.loadCategory();
+  const savedAnswers = quiz.loadAnswers();
 
-const storedAnswers = quiz.loadAnswers();
-storedAnswers.forEach((ans) => {
-  const index = questions.findIndex((q) => q.id === ans.id);
-  if (index !== -1) {
-    const input = document.querySelector(
-      `input[name="question${index}"][value="${ans.answer}"]`
-    );
-    if (input) input.checked = true;
+  if (savedCategory && savedAnswers.length > 0) {
+    categorySelect.value = savedCategory;
+    renderQuestions(savedCategory);
+  } else {
+    chooseMsg.style.display = "block";
+    quiz.clearCategory();
+    categorySelect.value = "General";
   }
+}
+
+categorySelect.addEventListener("change", (e) => {
+  const selectedCategory = e.target.value;
+  quiz.saveCategory(selectedCategory);
+  renderQuestions(selectedCategory);
 });
 
-// Submit
 submitBtn.addEventListener("click", () => {
+  const selectedCategory = categorySelect.value;
+  const filteredQuestions =
+    selectedCategory === "All"
+      ? questions
+      : questions.filter((q) => q.category === selectedCategory);
+
   const answers = [];
 
-  questions.forEach((q, i) => {
+  filteredQuestions.forEach((q, i) => {
     const selected = document.querySelector(
       `input[name="question${i}"]:checked`
     );
@@ -75,27 +99,23 @@ submitBtn.addEventListener("click", () => {
     }
   });
 
-  const score = quiz.calculateScore(
-    questions.map((q) => {
-      const ans = answers.find((a) => a.id === q.id);
-      return { id: q.id, answer: ans ? ans.answer : null };
-    })
-  );
-
-  const percentage = quiz.getPercentage();
-  const passed = quiz.hasPassed();
+  const score = quiz.calculateScore(answers, filteredQuestions);
+  const percentage = quiz.getPercentage(filteredQuestions);
+  const passed = quiz.hasPassed(filteredQuestions);
 
   resultDiv.textContent = `Your Score: ${score}/${
-    questions.length
+    filteredQuestions.length
   } (${percentage.toFixed(0)}%) - ${passed ? "Passed" : "Failed"}`;
 
   document
     .querySelectorAll("input[type=radio]")
     .forEach((input) => (input.disabled = true));
+
   quiz.clearAnswers();
+  quiz.clearCategory();
+  quiz.markFinished();
 });
 
-// Reset
 resetBtn.addEventListener("click", () => {
   document
     .querySelectorAll("input[type=radio]:checked")
@@ -103,8 +123,16 @@ resetBtn.addEventListener("click", () => {
   document
     .querySelectorAll("input[type=radio]")
     .forEach((input) => (input.disabled = false));
+
   resultDiv.textContent = "";
   quiz.score = 0;
   quiz.isFinished = false;
   quiz.clearAnswers();
+
+  const selectedCategory = categorySelect.value;
+  quiz.saveCategory(selectedCategory);
+
+  renderQuestions(selectedCategory);
+
+  quiz.clearFinished();
 });

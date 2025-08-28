@@ -8,16 +8,26 @@
   </head>
   <body>
     <h1 id="app-title">Quiz App</h1>
+    <div class="category-filter">
+      <label for="category">Choose category:</label>
+      <select id="category">
+        <option value="General">General</option>
+        <option value="HTML">HTML</option>
+        <option value="CSS">CSS</option>
+        <option value="JavaScript">JavaScript</option>
+      </select>
+    </div>
 
-    <div id="quiz-container"></div>
-
+    <div id="quiz-container">
+      <p id="choose-msg" style="text-align: center; font-size: 18px">
+        👆 Please choose a category to start the quiz
+      </p>
+    </div>
     <div class="actions">
       <button id="reset-btn">Reset</button>
       <button id="submit-btn">Submit</button>
     </div>
-
     <div id="result"></div>
-
     <script type="module" src="./src/app.js"></script>
   </body>
 </html>

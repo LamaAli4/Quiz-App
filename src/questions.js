@@ -8,12 +8,14 @@ export const questions = questionsData.map((q) => {
       text: q.text,
       options: q.options,
       correctAnswer: q.correctAnswer,
+      category: q.category, 
     });
   } else if (q.type === "tf") {
     return new TrueFalseQuestion({
       id: q.id,
       text: q.text,
       correctAnswer: q.correctAnswer,
+      category: q.category, 
     });
   }
 });
