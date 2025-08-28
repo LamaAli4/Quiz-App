@@ -50,7 +50,7 @@ This document translates the **User Stories** into detailed **technical requirem
   - `Quiz` class (manages logic, scoring, persistence).
 - Must use **ES6 Modules** (`import/export`).
 - Code must be **structured and modular**:
-  - `models.js` → Classes.
+  - `classes.js` → Classes.
   - `storage.js` → LocalStorage helpers.
   - `questionsData.js` → Raw questions.
   - `questions.js` → Convert data into objects.

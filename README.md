@@ -43,7 +43,7 @@ It allows users to take quizzes with multiple-choice and true/false questions, w
 
 - **/src**
   - **app.js** → Main entry point (UI + events)
-  - **models.js** → Classes (Question, TrueFalseQuestion, Quiz)
+  - **classes.js** → Classes (Question, TrueFalseQuestion, Quiz)
   - **storage.js** → LocalStorage helpers
   - **questionsData.js** → Raw questions
   - **questions.js** → Question objects initialization
