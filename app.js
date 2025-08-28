@@ -16,7 +16,7 @@ class TrueFalseQuestion extends Question {
   }
 }
 
-// Array of questions (mix MCQ + True/False)
+// Array of questions
 const questions = [
   new Question(
     "What is the capital of France?",
@@ -33,6 +33,7 @@ class Quiz {
     this.questions = questions;
     this.score = 0;
     this.isFinished = false;
+    this.storage = "quiz-answers";
   }
 
   calculateScore(answers) {
@@ -52,6 +53,18 @@ class Quiz {
 
   isPassed() {
     return this.getPercentage() >= 70;
+  }
+
+  saveAnswers(answers) {
+    localStorage.setItem(this.storage, JSON.stringify(answers));
+  }
+
+  loadAnswers() {
+    return JSON.parse(localStorage.getItem(this.storage) || "[]");
+  }
+
+  clearAnswers() {
+    localStorage.removeItem(this.storage);
   }
 }
 
@@ -75,15 +88,37 @@ function renderQuestions() {
       input.type = "radio";
       input.name = `question${index}`;
       input.value = option;
+
+      input.addEventListener("change", () => {
+        const answers = [];
+        questions.forEach((_, i) => {
+          const selected = document.querySelector(
+            `input[name="question${i}"]:checked`
+          );
+          answers.push(selected ? selected.value : null);
+        });
+        quiz.saveAnswers(answers);
+      });
+
       label.append(input, option);
       qDiv.append(label);
     });
 
-    quizContainer.appendChild(qDiv);
+    quizContainer.append(qDiv);
   });
 }
 
 renderQuestions();
+
+const storedAnswers = quiz.loadAnswers();
+storedAnswers.forEach((answer, index) => {
+  if (answer) {
+    const input = document.querySelector(
+      `input[name="question${index}"][value="${answer}"]`
+    );
+    if (input) input.checked = true;
+  }
+});
 
 // Submit Button
 const submitBtn = document.getElementById("submit-btn");
@@ -105,11 +140,13 @@ submitBtn.addEventListener("click", () => {
 
   resultDiv.textContent = `Your Score: ${score}/${
     questions.length
-  } (${percentage.toFixed(0)}%) - ${passed ? "Passed 🎉" : "Failed ❌"}`;
+  } (${percentage.toFixed(0)}%) - ${passed ? "Passed " : "Failed "}`;
 
   document.querySelectorAll("input[type=radio]").forEach((input) => {
     input.disabled = true;
   });
+
+  quiz.clearAnswers(); 
 });
 
 // Reset Button
@@ -131,4 +168,6 @@ resetBtn.addEventListener("click", () => {
   document.querySelectorAll("input[type=radio]").forEach((input) => {
     input.disabled = false;
   });
+
+  quiz.clearAnswers(); 
 });
