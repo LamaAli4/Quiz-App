@@ -1,16 +1,38 @@
 import * as storage from "./storage.js";
 
 export class Question {
+  #id;
+  #text;
+  #options;
+  #correctAnswer;
+  #category;
+
   constructor({ id, text, options = [], correctAnswer, category }) {
-    this.id = id;
-    this.text = text;
-    this.options = options;
-    this.correctAnswer = correctAnswer;
-    this.category = category;
+    this.#id = id;
+    this.#text = text;
+    this.#options = options;
+    this.#correctAnswer = correctAnswer;
+    this.#category = category;
+  }
+
+  get id() {
+    return this.#id;
+  }
+
+  get text() {
+    return this.#text;
+  }
+
+  get options() {
+    return [...this.#options];
+  }
+
+  get category() {
+    return this.#category;
   }
 
   isCorrectAnswer(selected) {
-    return this.correctAnswer === selected;
+    return this.#correctAnswer === selected;
   }
 }
 
@@ -19,31 +41,46 @@ export class TrueFalseQuestion extends Question {
     super({ id, text, options: ["True", "False"], correctAnswer, category });
   }
 }
-
 export class Quiz {
+  #questions;
+  #score;
+  #isFinished;
+
   constructor(questions, storageKey = "quiz-answers") {
-    this.questions = questions;
-    this.score = 0;
-    this.isFinished = false;
+    this.#questions = questions;
+    this.#score = 0;
+    this.#isFinished = false;
     this.storage = storageKey;
     this.categoryKey = "quiz-category";
     this.finishedKey = "quiz-finished";
   }
 
+  get questions() {
+    return [...this.#questions];
+  }
+
+  get score() {
+    return this.#score;
+  }
+
+  get isFinished() {
+    return this.#isFinished;
+  }
+
   calculateScore(answers, filteredQuestions) {
-    this.score = 0;
+    this.#score = 0;
     filteredQuestions.forEach((q) => {
       const ans = answers.find((a) => a.id === q.id);
       if (ans && q.isCorrectAnswer(ans.answer)) {
-        this.score++;
+        this.#score++;
       }
     });
-    this.isFinished = true;
-    return this.score;
+    this.#isFinished = true;
+    return this.#score;
   }
 
   getPercentage(filteredQuestions) {
-    return (this.score / filteredQuestions.length) * 100;
+    return (this.#score / filteredQuestions.length) * 100;
   }
 
   hasPassed(filteredQuestions) {

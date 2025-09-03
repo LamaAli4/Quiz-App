@@ -31,17 +31,20 @@ export function events({
     const passed = quiz.hasPassed(filteredQuestions);
 
     resultDiv.innerHTML = `
-      <div>Score: ${score}/${filteredQuestions.length}</div>
-      <div>Percentage: ${percentage.toFixed(1)}%</div>
-      <div>${
-        passed
-          ? "Congratulations! You passed!🎉"
-          : "Sorry, you didn't pass. Try again!"
-      }</div>
-    `;
+    <div>Score: ${score}/${filteredQuestions.length}</div>
+    <div>Percentage: ${percentage.toFixed(1)}%</div>
+    <div>${
+      passed
+        ? "Congratulations! You passed!"
+        : "Sorry, you didn't pass. Try again!"
+    }</div>
+  `;
 
     resultDiv.className = passed ? "success" : "failure";
     resultDiv.classList.remove("hidden");
+
+    const allOptions = quizContainer.querySelectorAll("input[type='radio']");
+    allOptions.forEach((input) => (input.disabled = true));
 
     quiz.markFinished();
     submitBtn.classList.add("hidden");
@@ -62,6 +65,7 @@ export function events({
 
     submitBtn.classList.add("hidden");
     resetBtn.classList.add("hidden");
+    resultDiv.innerHTML = "";
     resultDiv.classList.add("hidden");
 
     const newChooseMsg = document.getElementById("choose-msg");

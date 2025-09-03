@@ -24,6 +24,7 @@ if (quiz.isQuizFinished()) {
   categorySelect.value = "";
   submitBtn.classList.add("hidden");
   resetBtn.classList.add("hidden");
+  resultDiv.innerHTML = "";
   resultDiv.classList.add("hidden");
 } else {
   const savedCategory = quiz.loadCategory();
