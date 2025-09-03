@@ -26,7 +26,6 @@ export function events({
     );
     const answers = quiz.loadAnswers();
 
-
     const score = quiz.calculateScore(answers, filteredQuestions);
     const percentage = quiz.getPercentage(filteredQuestions);
     const passed = quiz.hasPassed(filteredQuestions);
@@ -49,21 +48,29 @@ export function events({
   });
 
   resetBtn.addEventListener("click", () => {
-    if (confirm("Are you sure you want to reset the quiz?")) {
-      quiz.clearAnswers();
-      quiz.clearCategory();
-      quiz.clearFinished();
+    document.getElementById("resetModal").classList.remove("hidden");
+  });
 
-      categorySelect.value = "";
-      quizContainer.innerHTML =
-        '<p id="choose-msg" style="text-align: center; font-size: 18px">Please choose a category to start the quiz 👆</p>';
+  document.getElementById("confirmReset").addEventListener("click", () => {
+    quiz.clearAnswers();
+    quiz.clearCategory();
+    quiz.clearFinished();
 
-      submitBtn.classList.add("hidden");
-      resetBtn.classList.add("hidden");
-      resultDiv.classList.add("hidden");
+    categorySelect.value = "";
+    quizContainer.innerHTML =
+      '<p id="choose-msg" style="text-align: center; font-size: 18px">Please choose a category to start the quiz 👆</p>';
 
-      const newChooseMsg = document.getElementById("choose-msg");
-      newChooseMsg.style.display = "block";
-    }
+    submitBtn.classList.add("hidden");
+    resetBtn.classList.add("hidden");
+    resultDiv.classList.add("hidden");
+
+    const newChooseMsg = document.getElementById("choose-msg");
+    newChooseMsg.style.display = "block";
+
+    document.getElementById("resetModal").classList.add("hidden");
+  });
+
+  document.getElementById("cancelReset").addEventListener("click", () => {
+    document.getElementById("resetModal").classList.add("hidden");
   });
 }
