@@ -1,5 +1,4 @@
 import { quiz } from "./app.js";
-import { questions } from "./questions.js";
 import { renderQuestions } from "./ui.js";
 
 export function events({
@@ -9,73 +8,62 @@ export function events({
   resultDiv,
   quizContainer,
 }) {
+  const chooseMsg = document.getElementById("choose-msg");
+
   categorySelect.addEventListener("change", (e) => {
-    const selectedCategory = e.target.value;
-    quiz.saveCategory(selectedCategory);
-    renderQuestions(
-      selectedCategory,
-      quizContainer,
-      resultDiv,
-      submitBtn,
-      resetBtn
-    );
+    const category = e.target.value;
+    if (category) {
+      quiz.saveCategory(category);
+      chooseMsg.style.display = "none";
+      renderQuestions(category, quizContainer, resultDiv, submitBtn, resetBtn);
+    }
   });
 
   submitBtn.addEventListener("click", () => {
-    const selectedCategory = categorySelect.value;
-    const filteredQuestions = questions.filter(
-      (q) => q.category === selectedCategory
+    const category = quiz.loadCategory();
+    const filteredQuestions = quiz.questions.filter(
+      (q) => q.category === category
     );
+    const answers = quiz.loadAnswers();
 
-    const answers = [];
-    filteredQuestions.forEach((q, i) => {
-      const selected = document.querySelector(
-        `input[name="question${i}"]:checked`
-      );
-      if (selected) {
-        answers.push({ id: q.id, answer: selected.value });
-      }
-    });
 
     const score = quiz.calculateScore(answers, filteredQuestions);
     const percentage = quiz.getPercentage(filteredQuestions);
     const passed = quiz.hasPassed(filteredQuestions);
 
-    resultDiv.textContent = `Your Score: ${score}/${
-      filteredQuestions.length
-    } (${percentage.toFixed(0)}%) - ${passed ? "Passed" : "Failed"}`;
+    resultDiv.innerHTML = `
+      <div>Score: ${score}/${filteredQuestions.length}</div>
+      <div>Percentage: ${percentage.toFixed(1)}%</div>
+      <div>${
+        passed
+          ? "Congratulations! You passed!🎉"
+          : "Sorry, you didn't pass. Try again!"
+      }</div>
+    `;
 
-    document
-      .querySelectorAll("input[type=radio]")
-      .forEach((input) => (input.disabled = true));
+    resultDiv.className = passed ? "success" : "failure";
+    resultDiv.classList.remove("hidden");
 
-    quiz.clearAnswers();
-    quiz.clearCategory();
     quiz.markFinished();
+    submitBtn.classList.add("hidden");
   });
 
   resetBtn.addEventListener("click", () => {
-    document
-      .querySelectorAll("input[type=radio]:checked")
-      .forEach((el) => (el.checked = false));
-    document
-      .querySelectorAll("input[type=radio]")
-      .forEach((input) => (input.disabled = false));
+    if (confirm("Are you sure you want to reset the quiz?")) {
+      quiz.clearAnswers();
+      quiz.clearCategory();
+      quiz.clearFinished();
 
-    resultDiv.textContent = "";
-    quiz.score = 0;
-    quiz.isFinished = false;
-    quiz.clearAnswers();
+      categorySelect.value = "";
+      quizContainer.innerHTML =
+        '<p id="choose-msg" style="text-align: center; font-size: 18px">Please choose a category to start the quiz 👆</p>';
 
-    const selectedCategory = categorySelect.value;
-    quiz.saveCategory(selectedCategory);
-    renderQuestions(
-      selectedCategory,
-      quizContainer,
-      resultDiv,
-      submitBtn,
-      resetBtn
-    );
-    quiz.clearFinished();
+      submitBtn.classList.add("hidden");
+      resetBtn.classList.add("hidden");
+      resultDiv.classList.add("hidden");
+
+      const newChooseMsg = document.getElementById("choose-msg");
+      newChooseMsg.style.display = "block";
+    }
   });
 }
