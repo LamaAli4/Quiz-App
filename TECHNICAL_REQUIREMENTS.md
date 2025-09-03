@@ -2,8 +2,7 @@
 
 ## 📝 Project: Quiz App
 
-This document translates the **User Stories** into detailed **technical requirements** for the Quiz App.
-
+This document defines the functional, non-functional, and technical requirements of the Quiz App based on the provided user stories and implementation plan.
 ---
 
 ## 1. Functional Requirements
@@ -12,8 +11,8 @@ This document translates the **User Stories** into detailed **technical requirem
 - The app must display **all questions at once**.
 - Each question should show:
   - The **question text**.
-  - A set of **options** (multiple-choice or true/false).
-  - An **input control** (radio buttons) to select one option only.
+  - A set of answer options (radio buttons).
+  - A mechanism that allows selecting only one option per question.
 
 ### 1.2 Question Types
 - **Multiple Choice (MCQ)**:
@@ -50,12 +49,13 @@ This document translates the **User Stories** into detailed **technical requirem
   - `Quiz` class (manages logic, scoring, persistence).
 - Must use **ES6 Modules** (`import/export`).
 - Code must be **structured and modular**:
-  - `classes.js` → Classes.
-  - `storage.js` → LocalStorage helpers.
+  - `app.js` → Main entry point (initialization + event binding).
+  - `classes.js` → Contains classes.
+  - `storage.js` → LocalStorage utilities.
   - `questionsData.js` → Raw questions.
   - `questions.js` → Convert data into objects.
-  - `app.js` → UI logic + event binding.
-  - Optional: `ui.js` and `events.js` for better separation.
+  -  `ui.js` → Handles DOM rendering of questions
+  - `events.js` → Handles user interactions and events
 - Must use **DOM manipulation** for rendering and event handling.
 - Project should include **at least 10 questions** (mix of MCQ + TF).
 
@@ -65,7 +65,6 @@ This document translates the **User Stories** into detailed **technical requirem
 - App must run in any modern browser (Chrome, Firefox, Edge).
 - No backend is required; runs fully on the client side.
 - Requires serving via **local server** (due to ES6 modules restrictions).
-- Diagram explaining class relationships must be provided (non-UML).
 
 
 
