@@ -14,7 +14,12 @@ export function events({
     const category = e.target.value;
     if (category) {
       quiz.saveCategory(category);
-      chooseMsg.style.display = "none";
+      quiz.clearAnswers();
+
+      if (chooseMsg) {
+        chooseMsg.style.display = "none";
+      }
+
       renderQuestions(category, quizContainer, resultDiv, submitBtn, resetBtn);
     }
   });
