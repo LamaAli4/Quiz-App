@@ -100,11 +100,12 @@ export class Quiz {
   }
 
   saveCategory(category) {
-    storage.save(this.categoryKey, category);
+    storage.save(this.categoryKey, { value: category });
   }
 
   loadCategory() {
-    return storage.load(this.categoryKey, "General");
+    const data = storage.load(this.categoryKey, { value: "General" });
+    return data.value;
   }
 
   clearCategory() {
