@@ -8,14 +8,13 @@ export function events({
   resultDiv,
   quizContainer,
 }) {
-  const chooseMsg = document.getElementById("choose-msg");
-
   categorySelect.addEventListener("change", (e) => {
     const category = e.target.value;
     if (category) {
       quiz.saveCategory(category);
       quiz.clearAnswers();
 
+      const chooseMsg = document.getElementById("choose-msg");
       if (chooseMsg) {
         chooseMsg.style.display = "none";
       }
@@ -31,19 +30,24 @@ export function events({
     );
     const answers = quiz.loadAnswers();
 
+    if (answers.length < filteredQuestions.length) {
+      document.getElementById("warningModal").classList.remove("hidden");
+      return;
+    }
+
     const score = quiz.calculateScore(answers, filteredQuestions);
     const percentage = quiz.getPercentage(filteredQuestions);
     const passed = quiz.hasPassed(filteredQuestions);
 
     resultDiv.innerHTML = `
-    <div>Score: ${score}/${filteredQuestions.length}</div>
-    <div>Percentage: ${percentage.toFixed(1)}%</div>
-    <div>${
-      passed
-        ? "Congratulations! You passed!"
-        : "Sorry, you didn't pass. Try again!"
-    }</div>
-  `;
+      <div>Score: ${score}/${filteredQuestions.length}</div>
+      <div>Percentage: ${percentage.toFixed(1)}%</div>
+      <div>${
+        passed
+          ? "Congratulations! You passed! 🎉"
+          : "Sorry, you didn't pass. Try again!"
+      }</div>
+    `;
 
     resultDiv.className = passed ? "success" : "failure";
     resultDiv.classList.remove("hidden");
@@ -89,5 +93,9 @@ export function events({
 
   document.getElementById("cancelReset").addEventListener("click", () => {
     document.getElementById("resetModal").classList.add("hidden");
+  });
+
+  document.getElementById("closeWarning").addEventListener("click", () => {
+    document.getElementById("warningModal").classList.add("hidden");
   });
 }

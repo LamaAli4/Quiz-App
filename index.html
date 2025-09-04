@@ -32,15 +32,24 @@
     <div id="result"></div>
 
     <div id="resetModal" class="modal hidden">
-  <div class="modal-content">
-    <p>Are you sure you want to reset the quiz?</p>
-    <div class="modal-actions">
-      <button id="confirmReset">Yes</button>
-      <button id="cancelReset">Cancel</button>
+      <div class="modal-content">
+        <p>Are you sure you want to reset the quiz?</p>
+        <div class="modal-actions">
+          <button id="confirmReset">Yes</button>
+          <button id="cancelReset">Cancel</button>
+        </div>
+      </div>
     </div>
-  </div>
-</div>
-    
+
+    <div id="warningModal" class="modal hidden">
+      <div class="modal-content">
+        <p>Please answer all questions before submitting ❗</p>
+        <div class="modal-actions">
+          <button id="closeWarning">OK</button>
+        </div>
+      </div>
+    </div>
+
     <script type="module" src="./src/app.js"></script>
   </body>
 </html>
