@@ -47,6 +47,7 @@ export function events({
     allOptions.forEach((input) => (input.disabled = true));
 
     quiz.markFinished();
+    quiz.clearAnswers();
     submitBtn.classList.add("hidden");
   });
 
@@ -56,20 +57,27 @@ export function events({
 
   document.getElementById("confirmReset").addEventListener("click", () => {
     quiz.clearAnswers();
-    quiz.clearCategory();
     quiz.clearFinished();
 
-    categorySelect.value = "";
-    quizContainer.innerHTML =
-      '<p id="choose-msg" style="text-align: center; font-size: 18px">Please choose a category to start the quiz 👆</p>';
-
-    submitBtn.classList.add("hidden");
-    resetBtn.classList.add("hidden");
-    resultDiv.innerHTML = "";
-    resultDiv.classList.add("hidden");
-
-    const newChooseMsg = document.getElementById("choose-msg");
-    newChooseMsg.style.display = "block";
+    if (!quiz.isFinished) {
+      categorySelect.value = quiz.loadCategory();
+      renderQuestions(
+        categorySelect.value,
+        quizContainer,
+        resultDiv,
+        submitBtn,
+        resetBtn
+      );
+    } else {
+      quiz.clearCategory();
+      categorySelect.value = "";
+      quizContainer.innerHTML =
+        '<p id="choose-msg" style="text-align: center; font-size: 18px">Please choose a category to start the quiz 👆</p>';
+      submitBtn.classList.add("hidden");
+      resetBtn.classList.add("hidden");
+      resultDiv.innerHTML = "";
+      resultDiv.classList.add("hidden");
+    }
 
     document.getElementById("resetModal").classList.add("hidden");
   });

@@ -84,7 +84,7 @@ export class Quiz {
   }
 
   hasPassed(filteredQuestions) {
-    return this.getPercentage(filteredQuestions) >= 70;
+    return this.getPercentage(filteredQuestions) >= 60;
   }
 
   saveAnswers(answers) {
