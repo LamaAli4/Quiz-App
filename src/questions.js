@@ -1,13 +1,13 @@
-import { Question, TrueFalseQuestion } from "./classes.js";
+import { TrueFalseQuestion, MultipleChoiceQuestion } from "./classes.js";
 import { questionsData } from "./questionsData.js";
 
 export const questions = questionsData.map((q) => {
   if (q.type === "mcq") {
-    return new Question({
+    return new MultipleChoiceQuestion({
       id: q.id,
       text: q.text,
       options: q.options,
-      correctAnswer: q.correctAnswer,
+      correctAnswers: q.correctAnswers,
       category: q.category,
     });
   } else if (q.type === "tf") {

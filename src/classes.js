@@ -11,22 +11,19 @@ export class Question {
     this.#id = id;
     this.#text = text;
     this.#options = options;
-    this.#correctAnswer = correctAnswer;
+    this.#correctAnswer = correctAnswer; 
     this.#category = category;
   }
 
   get id() {
     return this.#id;
   }
-
   get text() {
     return this.#text;
   }
-
   get options() {
     return [...this.#options];
   }
-
   get category() {
     return this.#category;
   }
@@ -38,9 +35,35 @@ export class Question {
 
 export class TrueFalseQuestion extends Question {
   constructor({ id, text, correctAnswer, category }) {
-    super({ id, text, options: ["True", "False"], correctAnswer, category });
+    super({
+      id,
+      text,
+      options: ["True", "False"],
+      correctAnswer,
+      category,
+    });
   }
 }
+
+export class MultipleChoiceQuestion extends Question {
+  #correctAnswers;
+
+  constructor({ id, text, options = [], correctAnswers = [], category }) {
+    super({ id, text, options, correctAnswer: null, category });
+    this.#correctAnswers = correctAnswers; 
+  }
+
+  get correctAnswers() {
+    return [...this.#correctAnswers];
+  }
+
+  isCorrectAnswer(selectedArray) {
+    if (!Array.isArray(selectedArray)) return false;
+    if (selectedArray.length !== this.#correctAnswers.length) return false;
+    return this.#correctAnswers.every((ans) => selectedArray.includes(ans));
+  }
+}
+
 export class Quiz {
   #questions;
   #score;
@@ -71,8 +94,12 @@ export class Quiz {
     this.#score = 0;
     filteredQuestions.forEach((q) => {
       const ans = answers.find((a) => a.id === q.id);
-      if (ans && q.isCorrectAnswer(ans.answer)) {
-        this.#score++;
+      if (ans) {
+        if (Array.isArray(ans.answer)) {
+          if (q.isCorrectAnswer(ans.answer)) this.#score++;
+        } else {
+          if (q.isCorrectAnswer(ans.answer)) this.#score++;
+        }
       }
     });
     this.#isFinished = true;

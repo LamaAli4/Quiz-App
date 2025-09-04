@@ -387,11 +387,12 @@ body::after {
   box-shadow: 0 8px 20px rgba(102, 126, 234, 0.15);
 }
 
-.question input[type="radio"] {
-  margin-right: 18px;
+.question input[type="radio"],
+.question input[type="checkbox"] {
+  margin-right: 18px;  
   transform: scale(1.4);
   cursor: pointer;
-  accent-color: #667eea;
+  accent-color: #667eea; 
   position: relative;
   z-index: 2;
 }

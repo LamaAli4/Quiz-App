@@ -1,5 +1,6 @@
 import { quiz } from "./app.js";
 import { questions } from "./questions.js";
+import { MultipleChoiceQuestion, TrueFalseQuestion } from "./classes.js";
 
 export function renderQuestions(
   filterCategory,
@@ -31,19 +32,40 @@ export function renderQuestions(
     question.options.forEach((option) => {
       const label = document.createElement("label");
       const input = document.createElement("input");
-      input.type = "radio";
-      input.name = `question${index}`;
+
+      if (question instanceof MultipleChoiceQuestion) {
+        input.type = "checkbox";
+        input.name = `question${index}[]`;
+      }
+      else if (question instanceof TrueFalseQuestion) {
+        input.type = "radio";
+        input.name = `question${index}`;
+      }
+
       input.value = option;
 
       const saved = storedAnswers.find((a) => a.id === question.id);
-      if (saved && saved.answer === option) {
-        input.checked = true;
+      if (saved) {
+        if (Array.isArray(saved.answer)) {
+          if (saved.answer.includes(option)) input.checked = true;
+        } else {
+          if (saved.answer === option) input.checked = true;
+        }
       }
 
       input.addEventListener("change", () => {
         const answers = quiz.loadAnswers();
         const updatedAnswers = answers.filter((a) => a.id !== question.id);
-        updatedAnswers.push({ id: question.id, answer: input.value });
+
+        if (question instanceof MultipleChoiceQuestion) {
+          const selected = Array.from(
+            qDiv.querySelectorAll("input[type='checkbox']:checked")
+          ).map((el) => el.value);
+          updatedAnswers.push({ id: question.id, answer: selected });
+        } else {
+          updatedAnswers.push({ id: question.id, answer: input.value });
+        }
+
         quiz.saveAnswers(updatedAnswers);
       });
 
